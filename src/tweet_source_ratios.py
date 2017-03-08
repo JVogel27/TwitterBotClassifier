@@ -20,7 +20,7 @@ def tweet_source_ratios(user_id):
     source_ratios = {}
 
     if not user_data['protected']:
-        for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items(100):
+        for tweet in tweepy.Cursor(api.user_timeline, id=user_id).items():
             if tweet.source in source_ratios:
                 source_ratios[tweet.source] += 1
             else:
