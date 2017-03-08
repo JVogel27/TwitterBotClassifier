@@ -2,6 +2,7 @@ import tweepy
 from get_api import get_api
 from agg_user_data import agg_user_data
 import datetime as dt
+import numpy as np
 
 #Once we are doing large-scale tests we can replace with a func that reads keys from a pickle
 consumer_key = 'UqqhoQSyTE0nhgMV1CpgdIeLU'
@@ -14,7 +15,7 @@ dow_ratios = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
 
 
 
-#Takes a user_id and returns a 4-Tuple (A, B, C, D)
+#Takes a user_id and returns a 5-Tuple (A, B, C, D, E)
 #A: int
     #How many tweets were iterated through
 #B: float
@@ -25,6 +26,9 @@ dow_ratios = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
 #D: dict
     #Keys are day of week, 0-6 maps to Sun-Sat
     #Values are relative frequencies of tweets on each day
+#E: float
+    #Average number of tweets user puts out per day
+
 def get_tweet_ratios(user_id):
     api = get_api(consumer_key, consumer_secret, access_token, access_secret)
 
@@ -33,6 +37,10 @@ def get_tweet_ratios(user_id):
     total_tweets_recorded = 0
 
     urls_recorded = 0
+
+    tweets_per_day = [-1]
+    cur_date = dt.datetime.today()
+    date_count = 0
     
     #If this account is protected we cannot see thier tweets and should skip
     #Once further progress is made, this check will likely be done at a higher level,
@@ -47,7 +55,20 @@ def get_tweet_ratios(user_id):
             #   to check if the urls are threats/malicious
             if len(tweet.entities['urls']) > 0:
                 urls_recorded += len(tweet.entities['urls'])
-                
+
+            if date_count == 0:
+                cur_date = tweet.created_at
+                tweets_per_day.append(0)
+                date_count += 1
+                tweets_per_day[date_count] += 1
+            elif tweet.created_at.day != cur_date.day:
+                cur_date = tweet.created_at
+                date_count += 1
+                tweets_per_day.append(0)
+                tweets_per_day[date_count] += 1
+            else:
+                tweets_per_day[date_count] += 1
+            
             #Summing the total recorded values here, rather than user_data[statuses_count]
             #   in case we want to change items() to some number items(n), to only pull n tweets
             #Not sure how to do this with variable args, as we don't have a constant default for n
@@ -65,9 +86,13 @@ def get_tweet_ratios(user_id):
 
         #Calculate ratio of total urls posted over total tweets
         urls_ratio = urls_recorded/total_tweets_recorded
-        
-        return total_tweets_recorded, urls_ratio, source_ratios, dow_ratios
 
+        #Slice the tweets_per_day list to remove the first -1 value
+        tweets_per_day = tweets_per_day[1:]
+        avg_tpd = np.average(tweets_per_day)
+        
+        return total_tweets_recorded, urls_ratio, source_ratios, dow_ratios, avg_tpd
+        
     else:
         print("Protected: {}".format(user_id))
         return -1, -1, {}, {}
