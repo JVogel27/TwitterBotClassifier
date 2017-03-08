@@ -75,7 +75,7 @@ def update_dow_ratios(weekday):
 #Example
 
 #Non-protected case
-print(get_tweet_ratios('1536488724'))
+#print(get_tweet_ratios('1536488724'))
 
 #Protected case
 #print(get_tweet_ratios('2663852887'))
