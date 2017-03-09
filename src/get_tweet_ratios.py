@@ -15,7 +15,7 @@ dow_ratios = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
 
 
 
-#Takes a user_id and returns a 5-Tuple (A, B, C, D, E)
+#Takes a user_id and returns a 7-Tuple (A, B, C, D, E, F, G)
 #A: int
     #How many tweets were iterated through
 #B: float
@@ -28,6 +28,10 @@ dow_ratios = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
     #Values are relative frequencies of tweets on each day
 #E: float
     #Average number of tweets user puts out per day
+#F: float
+    #Ratio of hashtags to tweets posted
+#G: float
+    #Ratio of user mentions to tweets posted
 
 def get_tweet_ratios(user_id):
     api = get_api(consumer_key, consumer_secret, access_token, access_secret)
@@ -37,6 +41,8 @@ def get_tweet_ratios(user_id):
     total_tweets_recorded = 0
 
     urls_recorded = 0
+    hashtags_recorded = 0
+    user_mentions_recorded = 0
 
     tweets_per_day = [-1]
     cur_date = dt.datetime.today()
@@ -56,16 +62,28 @@ def get_tweet_ratios(user_id):
             if len(tweet.entities['urls']) > 0:
                 urls_recorded += len(tweet.entities['urls'])
 
-            if date_count == 0:
+            #If this tweet conatained hashtags, count them
+            if len(tweet.entities['hashtags']) > 0:
+                   hashtags_recorded += len(tweet.entities['hashtags'])
+            
+            #If this tweet contained user mentions, count them
+            if len(tweet.entities['user_mentions']) > 0:
+                   user_mentions_recorded += len(tweet.entities['user_mentions'])
+            
+            #Count up the tweets for each day
+            #First if block captures date of most recent tweet
+            if date_count == 0: 
                 cur_date = tweet.created_at
                 tweets_per_day.append(0)
                 date_count += 1
                 tweets_per_day[date_count] += 1
+            #elif block handles first tweet of next day
             elif tweet.created_at.day != cur_date.day:
                 cur_date = tweet.created_at
                 date_count += 1
                 tweets_per_day.append(0)
                 tweets_per_day[date_count] += 1
+            #Else block handles more tweets on the same day
             else:
                 tweets_per_day[date_count] += 1
             
@@ -87,15 +105,21 @@ def get_tweet_ratios(user_id):
         #Calculate ratio of total urls posted over total tweets
         urls_ratio = urls_recorded/total_tweets_recorded
 
+        #Calculate ratio of total hashtags over total tweets
+        hashtags_ratio = hashtags_recorded/total_tweets_recorded
+
+        #Calculate ratio of total user mentions over total tweets
+        user_mentions_ratio = user_mentions_recorded/total_tweets_recorded
+        
         #Slice the tweets_per_day list to remove the first -1 value
         tweets_per_day = tweets_per_day[1:]
         avg_tpd = np.average(tweets_per_day)
         
-        return total_tweets_recorded, urls_ratio, source_ratios, dow_ratios, avg_tpd
+        return total_tweets_recorded, urls_ratio, source_ratios, dow_ratios, avg_tpd, hashtags_ratio, user_mentions_ratio
         
     else:
         print("Protected: {}".format(user_id))
-        return -1, -1, {}, {}
+        return -1, -1, {}, {}, -1, -1, -1
     
 
 def update_source_ratios(source):
