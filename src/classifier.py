@@ -2,7 +2,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
 
-class RandomForestClassifier():
+class Classifier():
 	"""
 	A wrapper class for some of the sci-kit functionality.
 	"""
