@@ -48,7 +48,7 @@ def get_tweet_ratios(user_id):
     cur_date = dt.datetime.today()
     date_count = 0
     
-    #If this account is protected we cannot see thier tweets and should skip
+    #If this account is protected we cannot see their tweets and should skip
     #Once further progress is made, this check will likely be done at a higher level,
     #   and the user account will not even make it to this stage
     if not user_data['protected']:
