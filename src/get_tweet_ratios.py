@@ -16,7 +16,7 @@ dow_ratios = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
 
 
 
-#Takes a user_id and returns a 7-Tuple (A, B, C, D, E, F, G)
+#Takes a user_id and returns a 8-Tuple (A, B, C, D, E, F, G, H)
 #A: int
     #How many tweets were iterated through
 #B: float
@@ -33,6 +33,8 @@ dow_ratios = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
     #Ratio of hashtags to tweets posted
 #G: float
     #Ratio of user mentions to tweets posted
+#H: float
+    #Ratio of malicious to total urls posted
 
 def get_tweet_ratios(user_id):
     api = get_api(consumer_key, consumer_secret, access_token, access_secret)
@@ -130,7 +132,8 @@ def get_tweet_ratios(user_id):
         print("Protected: {}".format(user_id))
         return -1, -1, {}, {}, -1, -1, -1, -1
     
-
+#Send all the urls out to Google's SafeBrowsing API to check for
+# malicious urls, and return the number found
 def num_malicious_urls(urls):
     key = 'AIzaSyAAPunMDPhArqLnE_zH9ZK91VDGWxka8K8'
     lookup_url = 'https://safebrowsing.googleapis.com/v4/threatMatches:find?key={}'.format(key)
@@ -153,10 +156,6 @@ def num_malicious_urls(urls):
         return (len(r.json()['matches']))
     return 0
     
-                    
-                                 
-               
-
 
 def update_source_ratios(source):
     if source in source_ratios:
