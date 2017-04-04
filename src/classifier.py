@@ -1,6 +1,12 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
+"""
+Some notes on hyper parameters:
+- Typically, the larger the number of trees, the better the performance of the random forest classifier at the expense
+ of an increased computational cost.
+"""
+
 
 class Classifier():
 	"""
@@ -9,14 +15,16 @@ class Classifier():
 	def __init__(self):
 		self.forest = None
 
-	def learn(self, x_train, y_train):
+	def learn(self, x_train, y_train, n_trees):
 		"""
 		create and train the random forest classifier
 		:param x_train: the input training data
 		:param y_train: the input class labels
+		:param n_trees: the number of decision trees to use
 		:return: n/a
 		"""
-		self.forest = RandomForestClassifier(criterion='entropy', n_estimators=10, random_state=1, n_jobs=2)
+		self.forest = RandomForestClassifier(criterion='entropy', n_estimators=n_trees, random_state=42, n_jobs=2,
+		                                     max_features=None)
 		self.forest.fit(x_train, y_train)
 
 	def predict(self, x):
