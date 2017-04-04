@@ -4,6 +4,15 @@ import numpy as np
 
 
 def plot_decision_regions(X, y, classifier, test_idx=None, resolution=0.02):
+	"""
+	utility function to visualize the decision boundaries between two features
+	:param X: 2D array of the input data to graph
+	:param y: 1D vector of the class labels
+	:param classifier: the trained classifier to use
+	:param test_idx: range of indices that contain test data points
+	:param resolution: hyper parameter
+	:return: N/A
+	"""
 	# setup marker generator and color map
 	markers = ('s', 'x', 'o', '^', 'v')
 	colors = ('red', 'blue', 'lightgreen', 'gray', 'cyan')
@@ -35,6 +44,16 @@ def plot_decision_regions(X, y, classifier, test_idx=None, resolution=0.02):
 
 
 def visualize_decision_regions(X, y, xlabel, ylabel, classifier_obj, test_idx=None):
+	"""
+	wrapper function for the plot_decision_regions function. Performs the graph configuration
+	:param X: 2D array of the input data to graph
+	:param y: 1D vector of the class labels
+	:param xlabel:
+	:param ylabel:
+	:param classifier_obj: the trained classifier to use
+	:param test_idx: range of indices that contain test data points
+	:return: N/A
+	"""
 	plot_decision_regions(X, y, classifier_obj, test_idx)
 	plt.xlabel(xlabel)
 	plt.ylabel(ylabel)

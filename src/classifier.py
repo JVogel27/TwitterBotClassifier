@@ -3,8 +3,8 @@ from sklearn.metrics import accuracy_score
 
 """
 Some notes on hyper parameters:
-- Typically, the larger the number of trees, the better the performance of the random forest classifier at the expense of
-an increased computational cost.
+- Typically, the larger the number of trees, the better the performance of the random forest classifier at the expense
+ of an increased computational cost.
 """
 
 
