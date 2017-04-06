@@ -3,7 +3,7 @@ import random
 
 class KeySet():
 	"""
-	
+	an object to represent all the credentials needed to auth with the twitter API
 	"""
 	def __init__(self, consumer_key, consumer_secret, access_token, access_secret):
 		self.consumer_key = consumer_key
@@ -12,6 +12,9 @@ class KeySet():
 		self.access_secret = access_secret
 
 	def to_string(self):
+		"""
+		to_string for testing purposes
+		"""
 		return "consumer key: " + self.consumer_key + "\nconsumer_secret: " + self.consumer_secret + "\naccess token: " \
 		       + self.access_token + "\naccess_secret: " + self.access_secret
 
