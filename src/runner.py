@@ -40,7 +40,7 @@ def main():
 	y_combined = np.hstack((y_train, y_test))
 	test_start = X_train.shape[0]   # use these values to highlight the test data on the graph
 	test_end = X_combined.shape[0]
-	#visualize_decision_regions(X_combined, y_combined, xlabel, ylabel, rfc, test_idx=range(test_start, test_end))
+	visualize_decision_regions(X_combined, y_combined, xlabel, ylabel, rfc, test_idx=range(test_start, test_end))
 
 if __name__ == '__main__':
 	main()
