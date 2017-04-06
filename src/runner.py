@@ -3,9 +3,14 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 import numpy as np
 from visualize import visualize_decision_regions
+import keys as key_reader
 
 
 def main():
+
+	# create a list of credential objects
+	keys = key_reader.read_key_file('./keys.txt')
+
 	# the data visualization graph only works for two features, so specify which ones to use
 	first_feature = 2
 	second_feature = 3
