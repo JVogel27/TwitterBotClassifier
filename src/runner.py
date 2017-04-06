@@ -3,9 +3,14 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 import numpy as np
 from visualize import visualize_decision_regions
+import keys as key_reader
 
 
 def main():
+
+	# create a list of credential objects
+	keys = key_reader.read_key_file('./keys.txt')
+
 	# the data visualization graph only works for two features, so specify which ones to use
 	first_feature = 2
 	second_feature = 3
@@ -35,7 +40,7 @@ def main():
 	y_combined = np.hstack((y_train, y_test))
 	test_start = X_train.shape[0]   # use these values to highlight the test data on the graph
 	test_end = X_combined.shape[0]
-	visualize_decision_regions(X_combined, y_combined, xlabel, ylabel, rfc, test_idx=range(test_start, test_end))
+	#visualize_decision_regions(X_combined, y_combined, xlabel, ylabel, rfc, test_idx=range(test_start, test_end))
 
 if __name__ == '__main__':
 	main()
