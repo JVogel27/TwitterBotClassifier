@@ -7,13 +7,13 @@ Some notes on hyper parameters:
  of an increased computational cost.
 """
 
-
 class Classifier():
 	"""
 	A wrapper class for some of the sci-kit functionality.
 	"""
 	def __init__(self):
 		self.forest = None
+
 
 	def learn(self, x_train, y_train, n_trees):
 		"""
@@ -47,5 +47,4 @@ class Classifier():
 		:return: overall accuracy normalized as a decimal between 0.0 and 1.0
 		"""
 		return accuracy_score(y_true, y_prediction)
-
 
