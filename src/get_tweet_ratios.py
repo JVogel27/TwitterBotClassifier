@@ -15,8 +15,8 @@ source_ratios = {}
 dow_ratios = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
 
 
-
 #Takes a user_id and returns a 8-Tuple (A, B, C, D, E, F, G, H)
+
 #A: int
     #How many tweets were iterated through
 #B: float
@@ -36,13 +36,14 @@ dow_ratios = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
 #H: float
     #Ratio of malicious to total urls posted
 
+
 def get_tweet_ratios(user_id):
     api = get_api(consumer_key, consumer_secret, access_token, access_secret)
 
     user_data = agg_user_data(user_id)  
 
     total_tweets_recorded = 0
-
+    
     hashtags_recorded = 0
     user_mentions_recorded = 0
     
@@ -53,11 +54,13 @@ def get_tweet_ratios(user_id):
     date_count = 0
     
     #If this account is protected we cannot see their tweets and should skip
+
     #Once further progress is made, this check will likely be done at a higher level,
     #   and the user account will not even make it to this stage
     if not user_data['protected']:
         #Iterate through all (3200 max) tweets. items() can take a lower max to limit
         for tweet in tweepy.Cursor(api.user_timeline, id=user_id, tweet_mode='extended').items(100):
+
             update_source_ratios(tweet.source)
             update_dow_ratios(tweet.created_at.weekday())
 
@@ -66,8 +69,7 @@ def get_tweet_ratios(user_id):
             if len(tweet.entities['urls']) > 0:
                 for url in tweet.entities['urls']:
                     urls.append(url['expanded_url'])
-                   
-
+                
             #If this tweet conatained hashtags, count them
             if len(tweet.entities['hashtags']) > 0:
                    hashtags_recorded += len(tweet.entities['hashtags'])
@@ -110,6 +112,7 @@ def get_tweet_ratios(user_id):
 
         #Calculate ratio of total urls posted over total tweets
         urls_ratio = len(urls)/total_tweets_recorded
+
 
         #Calculate ratio of total hashtags over total tweets
         hashtags_ratio = hashtags_recorded/total_tweets_recorded
@@ -155,6 +158,7 @@ def num_malicious_urls(urls):
     if r.status_code == 200 and len(r.json()) > 0:
         return (len(r.json()['matches']))
     return 0
+
     
 
 def update_source_ratios(source):
@@ -167,8 +171,8 @@ def update_source_ratios(source):
 def update_dow_ratios(weekday):
     dow_ratios[weekday] += 1
 
-
 get_tweet_ratios('1536488724')
+
 
 #Example
 
