@@ -16,7 +16,6 @@ class Classifier():
 	def __init__(self):
 		self.forest = None
 
-
 	def learn(self, x_train, y_train, n_trees):
 		"""
 		create and train the random forest classifier
@@ -61,7 +60,6 @@ class Classifier():
 		:return:
 		"""
 		self.forest = pickle.load(open(path, "rb"))
-
 
 	def get_classifier_accuracy(self, y_true, y_prediction):
 		"""
