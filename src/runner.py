@@ -4,10 +4,10 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 from visualize import visualize_decision_regions
 import keys as key_reader
+import os
 
 
 def main():
-
 	# create a list of credential objects
 	keys = key_reader.read_key_file('./keys.txt')
 
@@ -24,9 +24,17 @@ def main():
 	# split data into training and test data
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, train_size=0.66, random_state=42)
 
-	# create, train, then predict with our classifier
+	# read the learned classifier from the file system, or create it if it does not exist
+	file_name = "./learned_classifier.p"
 	rfc = Classifier()
-	rfc.learn(X_train, y_train, 22)
+	if os.path.isfile(file_name):
+		rfc.import_from_file(file_name)
+	else:
+		# learn the classifier
+		rfc.learn(X_train, y_train, 22)
+		rfc.export(file_name)   # save the classifier to disk
+
+	# predict
 	predicted_class_labels = rfc.predict(X_test)
 
 	# calculate the accuracy of the classifier
