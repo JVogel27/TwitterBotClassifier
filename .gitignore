@@ -2,3 +2,4 @@ node_modules/
 .DS_store
 .idea/
 src/__pycache__/
+src/learned_classifier.p

@@ -1,5 +1,7 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
+import pickle
+import os
 
 """
 Some notes on hyper parameters:
@@ -38,8 +40,30 @@ class Classifier():
 		else:
 			return None
 
-	@staticmethod
-	def get_classifier_accuracy(y_true, y_prediction):
+	def export(self, path):
+		"""
+		convert the classifier to byte representation and save it to a file
+		:param path:
+		:return:
+		"""
+		try:
+			os.remove(path)
+		except FileNotFoundError:
+			pass
+
+		with open(path, 'wb') as file:
+			pickle.dump(self.forest, file)
+
+	def import_from_file(self, path):
+		"""
+		read in the previously saved classifier
+		:param path: path to file
+		:return:
+		"""
+		self.forest = pickle.load(open(path, "rb"))
+
+
+	def get_classifier_accuracy(self, y_true, y_prediction):
 		"""
 		get the overall accuracy of the learned model
 		:param y_true: the ground truth (correct labels)
