@@ -1,5 +1,7 @@
 import csv
 from get_api import get_api
+from get_tweet_ratios import get_tweet_ratios
+from agg_user_data import agg_user_data
 from classifier import Classifier
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
