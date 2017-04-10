@@ -37,8 +37,8 @@ def lookup(userID):
     api = get_api(key[0], key[1], key[2], key[3])
 
 
-    user = agg_user_data(line.rstrip(), api)
-    ratios = get_tweet_ratios(line.rstrip(), api, user)
+    user = agg_user_data(userID, api)
+    ratios = get_tweet_ratios(userID, api, user)
                     
     X = user + ratios
     print()
@@ -47,7 +47,7 @@ def lookup(userID):
     return X
 
 def main():
-    twitter_user_name = sys.argv[1]
+    twitter_user_name = sys.argv[1].lstrip().rstrip()
 
 
     # the data visualization graph only works for two features, so specify which ones to use
