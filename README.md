@@ -7,7 +7,8 @@ Contributors: Jesse Vogel, Harry Longwell, Zach Migliorini
 - python 3.5
 
 **Project Dependencies:**
-- numpy
+- numpy+mkl(will need to install via file installation if using Windows)
+- scipy
 - scikit-learn
 - tweepy
 
