@@ -6,42 +6,46 @@ import numpy as np
 import requests
 
 #Once we are doing large-scale tests we can replace with a func that reads keys from a pickle
-consumer_key = 'UqqhoQSyTE0nhgMV1CpgdIeLU'
-consumer_secret = '8kRZxE2DPJnNBmfiIKxJg8FWYHf4eYmwwZ2Sx0tMcegRT71XTG'
-access_token = '837307303120551937-pUbSOzM3bISJI0J9zsPSQ4MesU5w7YH'
-access_secret = '3ohOMAmGkYsPKcq1zDTwNmGnUzPnQwqnV0m9ujy71Ta1p'
 
-source_ratios = {}
+key1 = ['UqqhoQSyTE0nhgMV1CpgdIeLU', \
+        '8kRZxE2DPJnNBmfiIKxJg8FWYHf4eYmwwZ2Sx0tMcegRT71XTG', \
+        '837307303120551937-pUbSOzM3bISJI0J9zsPSQ4MesU5w7YH', \
+        '3ohOMAmGkYsPKcq1zDTwNmGnUzPnQwqnV0m9ujy71Ta1p']
+
+key2 = ['uzfX6YkL5fQtdVPQHQhRzEPYq', \
+        'UAoxjiPk4mxIrQ6hUScxYv8r3vWYLOnW07XEAuW1gdgqz121jZ', \
+        '3453311595-IrMqmvxu42w6Gn68a9zWa0TCTg5ChSmm54KYMWe', \
+        'gwLenWKeEJcLeYYZcj0gtYsn0irdZZwuxugUPr5zi0Bnu']
+
+key3 = ['xYsEKjtxp2GLh04obgMYWUcgy', \
+        'zvVCFZNvp2UdATHugoBmoSDWHFUpOpLZGvoHHU8UGk0ADTuBEH', \
+        '850096655965859841-Y8Y1pDjaKJkDOiolJzO89R1e1dZten4', \
+        'wqzoHkebEg9HwVL5shX5HdaPHmMAkMV9yJHyjKXgMsLhh']
+
 dow_ratios = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
 
 
-#Takes a user_id and returns a 8-Tuple (A, B, C, D, E, F, G, H)
+#Takes a user_id and returns a -Tuple (A, B, C, D, E, F, G)
 
 #A: int
     #How many tweets were iterated through
 #B: float
     #Ratio of URLs posted to total tweets
 #C: dict
-    #Keys are the sources of all the users tweets
-    #Values are the relative frequencies of tweets from each source
-#D: dict
     #Keys are day of week, 0-6 maps to Sun-Sat
     #Values are relative frequencies of tweets on each day
-#E: float
+#D: float
     #Average number of tweets user puts out per day
-#F: float
+#R: float
     #Ratio of hashtags to tweets posted
-#G: float
+#F: float
     #Ratio of user mentions to tweets posted
-#H: float
+#G: float
     #Ratio of malicious to total urls posted
 
 
-def get_tweet_ratios(user_id):
-    api = get_api(consumer_key, consumer_secret, access_token, access_secret)
-
-    user_data = agg_user_data(user_id)  
-
+def get_tweet_ratios(user_id, api, user_data):
+##    api = get_api(key1[0], key1[1], key1[2], key1[3]) 
     total_tweets_recorded = 0
     
     hashtags_recorded = 0
@@ -49,6 +53,8 @@ def get_tweet_ratios(user_id):
     
     urls = []
 
+    mal_urls_ratio = 0
+    
     tweets_per_day = [-1]
     cur_date = dt.datetime.today()
     date_count = 0
@@ -57,15 +63,12 @@ def get_tweet_ratios(user_id):
 
     #Once further progress is made, this check will likely be done at a higher level,
     #   and the user account will not even make it to this stage
-    if not user_data['protected']:
+    if not user_data[0]:
         #Iterate through all (3200 max) tweets. items() can take a lower max to limit
-        for tweet in tweepy.Cursor(api.user_timeline, id=user_id, tweet_mode='extended').items(100):
-
-            update_source_ratios(tweet.source)
+        for tweet in tweepy.Cursor(api.user_timeline, id=user_id, tweet_mode='extended').items():
             update_dow_ratios(tweet.created_at.weekday())
-
-            #If this tweet contained urls, count them - later will use Google or Cymon API
-            #   to check if the urls are threats/malicious
+        
+            #If this tweet contained urls, count them
             if len(tweet.entities['urls']) > 0:
                 for url in tweet.entities['urls']:
                     urls.append(url['expanded_url'])
@@ -99,12 +102,11 @@ def get_tweet_ratios(user_id):
             #   in case we want to change items() to some number items(n), to only pull n tweets
             #Not sure how to do this with variable args, as we don't have a constant default for n
             total_tweets_recorded += 1
-        
-        #Calculate source_ratios from values
-        for key in source_ratios:
-            flat_val = source_ratios[key]
-            source_ratios[key] = flat_val/total_tweets_recorded
 
+        #Well this data sucks
+        if total_tweets_recorded == 0:
+            return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        
         #Calculate dow_ratios from values
         for key in dow_ratios:
             flat_val = dow_ratios[key]
@@ -112,7 +114,6 @@ def get_tweet_ratios(user_id):
 
         #Calculate ratio of total urls posted over total tweets
         urls_ratio = len(urls)/total_tweets_recorded
-
 
         #Calculate ratio of total hashtags over total tweets
         hashtags_ratio = hashtags_recorded/total_tweets_recorded
@@ -123,17 +124,18 @@ def get_tweet_ratios(user_id):
         #Slice the tweets_per_day list to remove the first -1 value
         tweets_per_day = tweets_per_day[1:]
         avg_tpd = np.average(tweets_per_day)
-        
+
         #Get ratio of malicious urls to total urls posted
         if len(urls) > 0:
             mal_urls_ratio = num_malicious_urls(urls) / len(urls)
         
-        return total_tweets_recorded, urls_ratio, source_ratios, dow_ratios,\
-               avg_tpd, hashtags_ratio, user_mentions_ratio, mal_urls_ratio
+        return [total_tweets_recorded, urls_ratio, dow_ratios[0], dow_ratios[1], \
+                dow_ratios[2], dow_ratios[3], dow_ratios[4], dow_ratios[5], \
+                dow_ratios[6], avg_tpd, hashtags_ratio, user_mentions_ratio, mal_urls_ratio]
         
     else:
         print("Protected: {}".format(user_id))
-        return -1, -1, {}, {}, -1, -1, -1, -1
+        return [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
     
 #Send all the urls out to Google's SafeBrowsing API to check for
 # malicious urls, and return the number found
@@ -159,20 +161,9 @@ def num_malicious_urls(urls):
         return (len(r.json()['matches']))
     return 0
 
-    
-
-def update_source_ratios(source):
-    if source in source_ratios:
-        source_ratios[source] += 1
-    else:
-        source_ratios[source] = 1
-
 
 def update_dow_ratios(weekday):
     dow_ratios[weekday] += 1
-
-get_tweet_ratios('1536488724')
-
 
 #Example
 
