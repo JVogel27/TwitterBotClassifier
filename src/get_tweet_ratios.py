@@ -85,7 +85,7 @@ def get_data(user_id, api):
 
         #Well this data sucks
         if tweets_parsed == 0:
-            return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            return user_data + [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         
         #Calculate dow_ratios from values
         for key in dow_ratios:
@@ -115,7 +115,7 @@ def get_data(user_id, api):
         
     else:
         print("Protected Account: {}".format(user_id))
-        return [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        return user_data + [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
     
 #Send all the urls out to Google's SafeBrowsing API to check for
 # malicious urls, and return the number found
