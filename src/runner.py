@@ -34,6 +34,7 @@ def get_training_data():
 	#print()
 	#print("training output data: " + str(y))
 	#print()
+	return np.asarray(X), np.asarray(y)
 	
 
 
