@@ -1,5 +1,4 @@
-from agg_user_data import agg_user_data
-from get_tweet_ratios import get_tweet_ratios
+from get_tweet_ratios import get_data
 from get_api import get_api
 import tweepy
 import csv
@@ -20,9 +19,9 @@ key3 = ['xYsEKjtxp2GLh04obgMYWUcgy', \
         '850096655965859841-Y8Y1pDjaKJkDOiolJzO89R1e1dZten4', \
         'wqzoHkebEg9HwVL5shX5HdaPHmMAkMV9yJHyjKXgMsLhh']
 
-##api = get_api(key1[0], key1[1], key1[2], key1[3])
+api = get_api(key1[0], key1[1], key1[2], key1[3])
 ##api = get_api(key2[0], key2[1], key2[2], key2[3])
-api = get_api(key3[0], key3[1], key3[2], key3[3])
+##api = get_api(key3[0], key3[1], key3[2], key3[3])
 
 def get_data_from_humans():
     try:
@@ -40,10 +39,8 @@ def get_data_from_humans():
                 for row in x:
                     writer.writerow(row)
                 for count, line in enumerate(f_read):
-                    user = agg_user_data(line.rstrip(), api)
-                    ratios = get_tweet_ratios(line.rstrip(), api, user)
                     
-                    row = user + ratios
+                    row = get_data(line.rstrip(), api)
 
                     writer.writerow(row)
 
@@ -69,10 +66,8 @@ def get_data_from_bots():
                 for row in x:
                     writer.writerow(row)
                 for count, line in enumerate(f_read):
-                    user = agg_user_data(line.rstrip(), api)
-                    ratios = get_tweet_ratios(line.rstrip(), api, user)
                     
-                    row = user + ratios
+                    row = get_data(line.rstrip(), api)
 
                     writer.writerow(row)
 
@@ -84,4 +79,4 @@ def get_data_from_bots():
         
 
 ##get_data_from_humans()
-get_data_from_bots()
+##get_data_from_bots()
