@@ -80,6 +80,7 @@ def main():
 	print("done!")
 	print("predicting...\n")
 	result = rfc.predict(input_data)
+	print("done!")
 	if result[0] == 1:
 		print("your account is a bot")
 	else:
