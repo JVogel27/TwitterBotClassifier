@@ -18,23 +18,23 @@ key = ['UqqhoQSyTE0nhgMV1CpgdIeLU', \
 
 
 def get_training_data():
-	X = []
-	y = []
-	with open('..//human_x.txt', 'r') as f:
-		reader = csv.reader(f)
-		for row in reader:
-			X.append(row)
-			y.append(0)
-	with open('..//bot_x.txt', 'r') as f:
-		reader = csv.reader(f)
-		for row in reader:
-			X.append(row)
-			y.append(1)
-	#print("training input data: " + str(X))
-	#print()
-	#print("training output data: " + str(y))
-	#print()
-	return np.asarray(X), np.asarray(y)
+    X = []
+    y = []
+    with open('..//human_x.txt', 'r') as f:
+        reader = csv.reader(f)
+	for row in reader:
+	    X.append(row)
+	    y.append(0)
+    with open('..//bot_x.txt', 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+	X.append(row)
+	y.append(1)
+    #print("training input data: " + str(X))
+    #print()
+    #print("training output data: " + str(y))
+    #print()
+    return np.asarray(X), np.asarray(y)
 	
 
 
