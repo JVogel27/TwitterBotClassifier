@@ -1,7 +1,6 @@
 import csv
 from get_api import get_api
-from get_tweet_ratios import get_tweet_ratios
-from agg_user_data import agg_user_data
+from get_tweet_ratios import get_data
 from classifier import Classifier
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
@@ -35,67 +34,64 @@ def get_training_data():
 	#print()
 	#print("training output data: " + str(y))
 	#print()
-	return np.asarray(X), np.array(y)
+	
 
 
 def lookup(userID):
-	api = get_api(key[0], key[1], key[2], key[3])
-	user = agg_user_data(userID, api)
-	ratios = get_tweet_ratios(userID, api, user)
-	X = user + ratios
-	#print()
-	#print("user input:" + str(X))
-	#print()
-	return np.asarray(X)
+    api = get_api(key[0], key[1], key[2], key[3])
 
+    X = get_data(userID, api)
+    #print()
+    #print("user input:" + str(X))
+    #print()            
+    return np.asarray(X)
 
 def main():
-	twitter_user_name = sys.argv[1].lstrip().rstrip()
+    twitter_user_name = sys.argv[1].lstrip().rstrip()
 
+    # read the learned classifier from the file system, or create it if it does not exist
+    file_name = './learned_classifier.p'
+    rfc = Classifier()
+    if os.path.isfile(file_name):
+        rfc.import_from_file(file_name)
+    else:
+	# learn the classifier
 	# extract our features and class label from the raw data
-	X, y = get_training_data()
+        X, y = get_training_data()
 
-	# split data into training and test data
-	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, train_size=0.66, random_state=42)
+        # split data into training and test data
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, train_size=0.66, random_state=42)
+        rfc.learn(X_train, y_train, 22)
+        rfc.export(file_name)   # save the classifier to disk
 
-	# read the learned classifier from the file system, or create it if it does not exist
-	file_name = './learned_classifier.p'
-	rfc = Classifier()
-	if os.path.isfile(file_name):
-		rfc.import_from_file(file_name)
-	else:
-		# learn the classifier
-		rfc.learn(X_train, y_train, 22)
-		rfc.export(file_name)   # save the classifier to disk
-	# predict
-	predicted_class_labels = rfc.predict(X_test)
+    	# predict
+    	predicted_class_labels = rfc.predict(X_test)
 
-	# calculate the accuracy of the classifier
-	accuracy = rfc.get_classifier_accuracy(predicted_class_labels, y_test)
-	print("accuracy of model: " + str(accuracy))
+    	# calculate the accuracy of the classifier
+    	accuracy = rfc.get_classifier_accuracy(predicted_class_labels, y_test)
+    	print(accuracy)
 
-	# run user input through classifier
-	print("mining twitter data...")
-	input_data = lookup(twitter_user_name)
-	print("done!")
-	print("predicting...\n")
-	result = rfc.predict(input_data)
-	print("done!")
-	if result[0] == 1:
-		print("your account is a bot")
-	else:
-		print("your account is a human")
+    # run user input through classifier
+    print("mining twitter data...")
+    input_data = lookup(twitter_user_name)
+    print("done!")
+    print("predicting...\n")
+    result = rfc.predict(input_data)
+    if result[0] == 1:
+	print("your account is a bot")
+    else:
+	print("your account is a human")
 
-	# plot the decision boundaries
-	# xlabel = iris.feature_names[first_feature]
-	# ylabel = iris.feature_names[second_feature]
-	# X_combined = np.vstack((X_train, X_test))
-	# y_combined = np.hstack((y_train, y_test))
-	# test_start = X_train.shape[0]   # use these values to highlight the test data on the graph
-	# test_end = X_combined.shape[0]
 
-	# visualize_decision_regions(X_combined, y_combined, xlabel, ylabel, rfc, test_idx=range(test_start, test_end))
+    # plot the decision boundaries
+    # xlabel = iris.feature_names[first_feature]
+    # ylabel = iris.feature_names[second_feature]
+    # X_combined = np.vstack((X_train, X_test))
+    # y_combined = np.hstack((y_train, y_test))
+    # test_start = X_train.shape[0]   # use these values to highlight the test data on the graph
+    # test_end = X_combined.shape[0]
+
+    # visualize_decision_regions(X_combined, y_combined, xlabel, ylabel, rfc, test_idx=range(test_start, test_end))
 
 if __name__ == '__main__':
 	main()
-
