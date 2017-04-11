@@ -1,6 +1,5 @@
 import tweepy
 from get_api import get_api
-from agg_user_data import agg_user_data
 import datetime as dt
 import numpy as np
 import requests
