@@ -14,5 +14,5 @@ Contributors: Jesse Vogel, Harry Longwell, Zach Migliorini
 
 **Usage:**
 ```
-  python3 program.py <twitter username>
+  python3 runner.py <twitter username>
 ```
