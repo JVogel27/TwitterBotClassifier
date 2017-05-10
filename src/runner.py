@@ -16,25 +16,20 @@ key = ['UqqhoQSyTE0nhgMV1CpgdIeLU', \
 		'3ohOMAmGkYsPKcq1zDTwNmGnUzPnQwqnV0m9ujy71Ta1p']
 
 
-
 def get_training_data():
 	X = []
 	y = []
-	with open('..//human_x.txt', 'r') as f:
+	with open('..//human_x_large.txt', 'r') as f:
 		reader = csv.reader(f)
 		for row in reader:
 			X.append(row)
 			y.append(0)
-	with open('..//bot_x.txt', 'r') as f:
+	with open('..//bot_x_large.txt', 'r') as f:
 		reader = csv.reader(f)
 		for row in reader:
 			X.append(row)
 			y.append(1)
-	#print("training input data: " + str(X))
-	#print()
-	#print("training output data: " + str(y))
-	#print()
-	return np.asarray(X), np.asarray(y)
+	return X, y
 
 
 
@@ -42,10 +37,8 @@ def lookup(userID):
 	api = get_api(key[0], key[1], key[2], key[3])
 
 	X = get_data(userID, api)
-	#print()
-	#print("user input:" + str(X))
-	#print()
-	return np.asarray(X)
+	return X
+
 
 def main():
 	twitter_user_name = sys.argv[1].lstrip().rstrip()
@@ -55,13 +48,14 @@ def main():
 	rfc = Classifier()
 	if os.path.isfile(file_name):
 		rfc.import_from_file(file_name)
+		print("\nClassifier loaded")
 	else:
-	# learn the classifier
-	# extract our features and class label from the raw data
+		# learn the classifier
+		# extract our features and class label from the raw data
 		X, y = get_training_data()
-
 		# split data into training and test data
 		X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, train_size=0.66, random_state=42)
+		print("\nLearning classifier...")
 		rfc.learn(X_train, y_train, 22)
 		rfc.export(file_name)   # save the classifier to disk
 
@@ -70,18 +64,19 @@ def main():
 
 		# calculate the accuracy of the classifier
 		accuracy = rfc.get_classifier_accuracy(predicted_class_labels, y_test)
-		print(accuracy)
+		print("Classifier accuracy: ", accuracy)
 
 	# run user input through classifier
-	print("mining twitter data...")
-	input_data = lookup(twitter_user_name)
-	print("done!")
-	print("predicting...\n")
+	print("Mining twitter data...")
+	input_data = np.array(lookup(twitter_user_name)).reshape(1, -1)
+	print("Done!")
+	print("Predicting...")
 	result = rfc.predict(input_data)
+	print("Done!\n")
 	if result[0] == 1:
-		print("your account is a bot")
+		print("Your account is a bot!\n")
 	else:
-		print("your account is a human")
+		print("Your account is a human!\n")
 
 
 	# plot the decision boundaries

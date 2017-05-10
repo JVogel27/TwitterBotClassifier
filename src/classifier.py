@@ -1,5 +1,6 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
+import numpy as np
 import pickle
 import os
 
@@ -26,6 +27,8 @@ class Classifier():
 		"""
 		self.forest = RandomForestClassifier(criterion='entropy', n_estimators=n_trees, random_state=42, n_jobs=2,
 		                                     max_features=None)
+		#x_train_alt = np.asarray(x_train, dtype=np.float)
+		#y_train_alt = np.asarray(y_train, dtype=np.float)
 		self.forest.fit(x_train, y_train)
 
 	def predict(self, x):
